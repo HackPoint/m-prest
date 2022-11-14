@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, } from '@angular/core';
 import { DataService } from './services/data.service';
-import { BehaviorSubject, filter, from, map, Observable, of, startWith, tap, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, filter, from, map, Observable, of, startWith, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Person } from './types/person';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { DestroyService } from './services/destroy.service';
@@ -26,6 +26,7 @@ export class PeopleComponent implements OnInit {
   filteredPeople$: Observable<Person[]> = this._store.asObservable();
 
   constructor(
+    @Inject(DestroyService) private readonly destroy$: DestroyService,
     private readonly dataService: DataService,
     private formBuilder: FormBuilder) {
   }
@@ -35,6 +36,7 @@ export class PeopleComponent implements OnInit {
 
     // todo: destroy subs
     this.dataService.getPeople()
+      .pipe(takeUntil(this.destroy$))
       .subscribe(ppl => this._store.next(ppl));
 
     // destroy subs
@@ -42,6 +44,7 @@ export class PeopleComponent implements OnInit {
       .pipe(
         startWith(''),
         withLatestFrom(this.filteredPeople$),
+        takeUntil(this.destroy$),
         map(([val, people]) => !val ? people : people.filter((x: Person) => {
           return x
             && x.id.toString().toLowerCase().includes(val)
@@ -55,6 +58,7 @@ export class PeopleComponent implements OnInit {
     ev.preventDefault();
     const filtered$ = this.filteredPeople$
       .pipe(
+        takeUntil(this.destroy$),
         map(people => {
           return people.filter(p => p.id !== person.id);
         })
@@ -79,6 +83,20 @@ export class PeopleComponent implements OnInit {
   }
 
   addPerson() {
-    // todo: should add person
+    this._store
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(ppl => {
+        ppl.push({
+          editMode: true,
+          title: '',
+          id: Number(ppl[ppl.length - 1].id + 1).toString(),
+          albumId: ppl[0].albumId,
+          url: '',
+          thumbnailUrl: ''
+        });
+        ppl.sort((a, b) => {
+          return Number(b.id) - Number(a.id);
+        });
+      });
   }
 }

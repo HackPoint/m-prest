@@ -58,7 +58,8 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let person of filteredPeople$|async" class="pl-5"  (click)="selectRow(person)">
+        <tr *ngFor="let person of filteredPeople$|async" class="pl-5"
+            (click)="selectRow(person)" class="hover:cursor-pointer hover:bg-gray-100">
           <td class="border-dashed border-t border-gray-200">
             <span class="text-gray-700 pl-6 py-3 flex items-center">{{person.id}}</span>
           </td>
