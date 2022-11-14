@@ -1,4 +1,5 @@
 ### Stack:
+* nx/nrwl v15
 * Angular v14.2
 * Rxjs v7.5
 * Typescript v4.8.2
