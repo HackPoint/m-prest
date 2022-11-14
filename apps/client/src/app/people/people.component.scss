@@ -1,0 +1,62 @@
+/*
+$column-spacing: 1rem;
+
+table { width: 100%; }
+
+tr {
+  width: 100%;
+  height: 2.5rem;         // Emphasize the header row more
+  display: flex;          // Spread header row
+  align-items: center;    // WITHOUT losing vertical text centering
+
+  // Enclosed Cells
+  th, td {
+    cursor: pointer;
+    text-align: center;
+
+    // Solves issue of growing into parent wrappers
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 100%;
+
+    // How the $column-spacing var we created acts as "column" spacing: math.
+    margin-left: $column-spacing / 2;
+    margin-right: $column-spacing / 2;
+    &:first-child { margin-left: none; }      // Removes left margin from very left column
+    &:last-child { margin-right: none; }      // Removes right margin from very right column
+  }
+}
+
+
+.table-row.header {
+  background-color: #c0c0c0;   // Adds a nice darker background
+  border-radius: 6px 6px 0 0;         // Rounds the top-left and top-right corners
+
+  // Typical header styling
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.07rem;
+  color: #c0c0c0;
+}
+
+.table-row.data {
+  &:nth-child(even) {                   // Adds BG color to every other CHILD element
+    background-color: #c0c0c0;
+  }
+}
+
+.form-group {
+  max-width: 180px;                   // overrides @riapacheco/yutes width (designed to fill any wrapper with width: 100%)
+  margin-bottom: 1rem;
+}
+.search-input {                       // matches the style to our view
+  background-color: #c0c0c0;
+  color: #ccc;
+  border-radius: 30px;
+  padding-left: 1.5rem;
+}
+.search-input::placeholder {          // changes color of placeholder text
+  color:#c0c0c0;
+}
+*/
