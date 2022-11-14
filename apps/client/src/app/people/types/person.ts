@@ -4,5 +4,8 @@ export interface Person {
   title: string;
   readonly url: string;
   readonly thumbnailUrl: string;
+
+  editMode: boolean;
+
 }
 

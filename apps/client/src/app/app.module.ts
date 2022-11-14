@@ -7,17 +7,18 @@ import { CommonModule } from '@angular/common';
 import { DataService } from './people/services/data.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ScrollingModule } from '@angular/cdk/scrolling';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [AppComponent, PeopleComponent],
-  imports: [
-    BrowserModule,
-    CommonModule,
-    HttpClientModule,
-    ScrollingModule,
-    ReactiveFormsModule
-  ],
+    imports: [
+        BrowserModule,
+        CommonModule,
+        HttpClientModule,
+        ScrollingModule,
+        ReactiveFormsModule,
+        FormsModule
+    ],
   providers: [DataService],
   bootstrap: [AppComponent],
 })
