@@ -1,0 +1,103 @@
+<div class="antialiased sans-serif bg-gray-200 h-screen">
+  <div class="container mx-auto py-6 px-4" x-data="datatables()" x-cloak>
+
+    <div class="mb-4 flex justify-between items-center">
+      <div class="flex-1 ">
+        <div class="relative md:w-full">
+          <input
+            #searchBox
+            [formControl]="filter"
+            placeholder="Search"
+            name="searchString"
+            class="w-full pl-10 pr-4 py-2 rounded-lg shadow focus:outline-none focus:shadow-outline text-gray-600 font-medium"
+            type="search"
+            autocomplete="off">
+
+          <div class="absolute top-0 left-0 inline-flex items-center p-2" (click)="clearInput()">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-gray-400" viewBox="0 0 24 24"
+                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                 stroke-linejoin="round">
+              <rect x="0" y="0" width="24" height="24" stroke="none"></rect>
+              <circle cx="10" cy="10" r="7"/>
+              <line x1="21" y1="21" x2="15" y2="15"/>
+            </svg>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto bg-white rounded-lg shadow overflow-y-auto relative grid grid-cols-2 justify-between"
+         style="max-height: 600px; min-height: 650px">
+      <div *ngIf="currentImageUrl; else otherContent">
+        <img [src]="currentImageUrl" class="w-full h-full">
+      </div>
+      <ng-template #otherContent>
+        <img src="https://via.placeholder.com/600/ccc" class="w-full h-full object-fill">
+      </ng-template>
+
+      <table class="border-collapse table-auto w-full whitespace-no-wrap bg-white table-striped h-[100px]">
+        <thead>
+        <tr class="text-left">
+          <th
+            class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">
+            Id
+          </th>
+          <th
+            class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">
+            Profile
+          </th>
+          <th
+            class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">
+            Title
+          </th>
+          <th
+            class="bg-gray-100 sticky top-0 border-b border-gray-200 px-6 py-2 text-gray-600 font-bold tracking-wider uppercase text-xs">
+            Actions
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let person of filteredPeople$ | async" class="pl-5 min-h-[100px]"
+            (click)="selectRow(person)" class="hover:cursor-pointer hover:bg-gray-100">
+          <td class="border-dashed border-t border-gray-200">
+            <span class="text-gray-700 pl-6 py-3 flex items-center">{{person.id}}</span>
+          </td>
+
+          <td class="border-dashed border-t border-gray-200 px-4">
+            <img class="h-full rounded-xl w-[100px]" [src]="person.thumbnailUrl" [alt]="person.title"/>
+          </td>
+
+          <td class="border-dashed border-t border-gray-200">
+            <span class="text-gray-700 px-6 py-3 flex items-center" *ngIf="!person.editMode">{{person.title}}</span>
+            <input *ngIf="person.editMode"
+                   class="placeholder:italic placeholder:text-slate-400 block bg-white w-full border border-slate-300 rounded-md py-2 pl-9 pr-3 shadow-sm focus:outline-none focus:border-sky-500 focus:ring-sky-500 focus:ring-1 sm:text-sm"
+                   [placeholder]="person.title" type="text" name="title" [(ngModel)]="person.title"/>
+          </td>
+          <td class="border-dashed border-t border-gray-200">
+            <a href="#" *ngIf="!person.editMode"
+               class="bg-blue-500 p-2 mr-1 text-white hover:shadow-lg text-xs font-thin"
+               (click)="editRow($event, person)">Edit</a>
+
+            <a href="#" *ngIf="person.editMode"
+               class="bg-orange-500 p-2 mr-1 text-white hover:shadow-lg text-xs font-thin"
+               (click)="editRow($event, person)">Update</a>
+
+            <a href="#" class="bg-red-500 p-2 text-white hover:shadow-lg text-xs font-thin"
+               (click)="deleteRow($event, person)">Remove</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="flex items-start">
+      <button
+        (click)="addPerson()"
+        class="focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 mt-2 inline-flex items-start justify-start px-6 py-3 bg-indigo-700 hover:bg-indigo-600 focus:outline-none rounded">
+        <p class="text-sm font-medium leading-none text-white text-md">Add Task</p>
+      </button>
+    </div>
+  </div>
+
+</div>
