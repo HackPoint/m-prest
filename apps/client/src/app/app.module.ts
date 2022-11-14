@@ -6,7 +6,6 @@ import { PeopleComponent } from './people/people.component';
 import { CommonModule } from '@angular/common';
 import { DataService } from './people/services/data.service';
 import { HttpClientModule } from '@angular/common/http';
-import { ScrollingModule } from '@angular/cdk/scrolling';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
@@ -15,7 +14,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         BrowserModule,
         CommonModule,
         HttpClientModule,
-        ScrollingModule,
         ReactiveFormsModule,
         FormsModule
     ],

@@ -1,8 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, } from '@angular/core';
 import { DataService } from './services/data.service';
-import { BehaviorSubject, filter, from, map, Observable, of, startWith, takeUntil, tap, withLatestFrom } from 'rxjs';
+import {
+  BehaviorSubject,
+  combineLatestWith,
+  map,
+  Observable,
+  ReplaySubject,
+  startWith,
+  takeUntil,
+  withLatestFrom
+} from 'rxjs';
 import { Person } from './types/person';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { DestroyService } from './services/destroy.service';
 
 
@@ -16,14 +25,18 @@ import { DestroyService } from './services/destroy.service';
   ]
 })
 export class PeopleComponent implements OnInit {
-  private readonly _store: BehaviorSubject<Person[]> = new BehaviorSubject<Person[]>([]);
   private DEFAULT_PLACEHOLDER = 'https://via.placeholder.com/600/ccc';
+  private readonly store$: BehaviorSubject<Person[]> = new BehaviorSubject<Person[]>([]);
+
+  filter!: FormControl;
+  filter$!: Observable<string>;
+
 
   formGroup!: FormGroup;
   currentImageUrl = '';
   searchText = '';
 
-  filteredPeople$: Observable<Person[]> = this._store.asObservable();
+  filteredPeople$: Observable<Person[]> = this.store$.asObservable();
 
   constructor(
     @Inject(DestroyService) private readonly destroy$: DestroyService,
@@ -32,18 +45,18 @@ export class PeopleComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formGroup = this.formBuilder.group({ filter: [''] });
-
-    // todo: destroy subs
     this.dataService.getPeople()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(ppl => this._store.next(ppl));
+      .pipe(
+        takeUntil(this.destroy$)
+      ).subscribe(ppl => this.store$.next(ppl));
 
-    // destroy subs
-    this.formGroup.get('filter')?.valueChanges
+    this.filter = new FormControl('');
+    this.filter$ = this.filter.valueChanges;
+
+    this.filteredPeople$ = this.filter$
       .pipe(
         startWith(''),
-        withLatestFrom(this.filteredPeople$),
+        combineLatestWith(this.store$, this.filteredPeople$),
         takeUntil(this.destroy$),
         map(([val, people]) => !val ? people : people.filter((x: Person) => {
           return x
@@ -51,7 +64,6 @@ export class PeopleComponent implements OnInit {
             || x && x.title.toString().toLowerCase().includes(val);
         }))
       );
-
   }
 
   deleteRow(ev: MouseEvent, person: Person) {
@@ -83,20 +95,17 @@ export class PeopleComponent implements OnInit {
   }
 
   addPerson() {
-    this._store
+    this.store$
       .pipe(takeUntil(this.destroy$))
       .subscribe(ppl => {
-        ppl.push({
+        ppl.splice(0, 0, {
           editMode: true,
           title: '',
           id: Number(ppl[ppl.length - 1].id + 1).toString(),
           albumId: ppl[0].albumId,
           url: '',
-          thumbnailUrl: ''
-        });
-        ppl.sort((a, b) => {
-          return Number(b.id) - Number(a.id);
-        });
+          thumbnailUrl: this.DEFAULT_PLACEHOLDER
+        })
       });
   }
 }

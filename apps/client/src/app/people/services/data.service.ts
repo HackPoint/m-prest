@@ -7,12 +7,11 @@ import { Person } from '../types/person';
   providedIn: 'root'
 })
 export class DataService {
-  static DATA_URL = 'https://jsonplaceholder.typicode.com/albums/2/photos';
-
+  static DATA_URL = 'https://jsonplaceholder.typicode.com/photos';
   constructor(private readonly httpClient: HttpClient) {
   }
 
-  getPeople(): Observable<Person[]> {
-    return this.httpClient.get<Person[]>(DataService.DATA_URL);
+  getPeople(pageNumber?: number, pageSize?: number): Observable<Person[]> {
+    return this.httpClient.get<Person[]>(`${DataService.DATA_URL}`);
   }
 }
